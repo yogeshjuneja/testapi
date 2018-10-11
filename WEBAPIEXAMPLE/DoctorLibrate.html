@@ -1,0 +1,281 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    
+    <meta charset="utf-8" />
+    <title>Lybrate (Doctor) ClaimMannual</title>
+    <style>
+        .divBackMain {
+            z-index: 100;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            height: 100%;
+            width: 100%;
+            background-color: #A9A9A9;
+            opacity: 0.4;
+        }
+
+        .DoctorClaim {
+            width: 100%;
+        }
+
+        #DC_PolicyNum, #DC_MemberCode {
+            width: 100%;
+        }
+
+        #Policy {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            #Policy td, #Policy th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            /*#Policy tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }*/
+
+            /*#Policy tr:hover {
+                background-color: #ddd;
+            }*/
+
+            #Policy th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #ddd;
+                color: white;
+            }
+
+
+        .loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid blue;
+            border-right: 16px solid green;
+            border-bottom: 16px solid red;
+            border-left: 16px solid pink;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+        var TokenName = "ashish.srivastava";
+        var BaseUrl = "http://localhost:57439/api/DoctorClaim/";
+
+        function SaveDoctorClaim() {
+            debugger;
+            var isValid = ValidateDoctorClaim();
+            if (isValid == false) {
+                return false;
+            }
+            $("#result").show();
+            $("#JsonResult").val('[{"TDC_ClaimID":"201806260011"}]');            
+            $("#container").show();
+            var objDoctorClaimRequest = {
+                ClientId: $("#DC_ClientId").val(),
+                PolicyNumber: $("#DC_PolicyNumber").val(),
+                PatientName: $("#DC_PatientName").val(),
+                MemberCode: $("#DC_MemberCode").val(),
+                PatientAge: $("#DC_PatientAge").val(),
+                PatientGender: $("#DC_PatientGender").val(),
+                PatientAddress: $("#DC_PatientAddress").val(),
+                PatientMobile: $("#DC_PatientMobile").val(),
+                DoctorId: $("#DC_DoctorId").val(),
+                DoctorName: $("#DC_DoctorName").val(),
+                PatientPic: $("#DC_PatientPic ").val(),
+                Document: $("#DC_Document").val(),
+                AppointmentDate: $("#DC_AppointmentDate").val(),
+                DC_Diagnosis: $("#DC_Diagnosis").val(),
+                DC_ClaimedAmount: $("#DC_ClaimedAmount").val()
+            };
+            alert(JSON.stringify(objDoctorClaimRequest));
+            $.ajax({
+                url: BaseUrl + "AddClaim",
+                data: JSON.stringify(objDoctorClaimRequest),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                headers: {
+                    'Token': TokenName
+                },
+                success: function (data) {
+
+                    $("#result").show();
+                    $("#JsonResult").val(data);
+                    $("#container").hide();
+                },
+                error: function (errormessage) {
+                    $("#result").show();
+                    $("#JsonResult").val(errormessage.responseText);
+                    $("#container").hide();
+
+                }
+            });
+        }
+
+        function ValidateDoctorClaim() {
+            var isValid = true;
+            if ($('#DC_PolicyNumber').val().trim() == "") {
+                $('#DC_PolicyNumber').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#DC_PolicyNumber').css('border-color', 'lightgrey');
+            }
+            if ($('#DC_MemberCode').val().trim() == "") {
+                $('#DC_MemberCode').css('border-color', 'Red');
+                isValid = false;
+            }
+            if ($('#DC_AppointmentDate').val().trim() == "") {
+                $('#DC_AppointmentDate').css('border-color', 'Red');
+                isValid = false;
+            }
+            //if ($('#DC_ClientId').val().trim()=="") {
+            //    $('#DC_ClientId').css('border-color', 'Red');
+            //    isValid = false;
+            //}
+            //else {
+            //    $('#DC_ClientId').css('border-color', 'lightgrey');
+            //}
+            return isValid;
+        }
+
+
+
+
+
+    </script>
+</head>
+<body>
+    <!--<div ng-app="">
+        <p>Name: <input type="text" ng-model="name"></p>
+        <p ng-bind="name"></p>
+    </div>-->
+    <form>
+
+        <div id="container" class="divBackMain" style="display:none">
+            <div class="loader">
+
+            </div>
+        </div>
+        <h2 style="text-align:center">Lybrate Doctor Manual</h2>
+        <table id="Policy" class=".table-striped">
+            <thead style="background-color:#ddd;">
+                <tr>
+                    <td>APIs Name</td>
+
+                    <td>Parameter</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Doctor Claim</b></td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>
+                                    ClientId:<input type="text" id="DC_ClientId" name="DC_ClientId" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PolicyNumber :<input type="text" id="DC_PolicyNumber" name="DC_PolicyNumber" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PatientName :<input type="text" id="DC_PatientName" name="DC_PatientName" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    MemberCode :<input type="text" id="DC_MemberCode" name="DC_MemberCode" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PatientAge :<input type="text" id="DC_PatientAge" name="DC_PatientAge" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PatientGender :<input type="text" id="DC_PatientGender" name="DC_PatientGender" maxlength="50" class="DoctorClaim" />
+                                </td>
+                            </tr>
+                            <tr>
+                               
+                                <td>
+                                    PatientAddress :<input type="text" id="DC_PatientAddress" name="DC_PatientAddress" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PatientMobile :<input type="text" id="DC_PatientMobile" name="DC_PatientMobile" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    DoctorId :<input type="text" id="DC_DoctorId" name="DC_DoctorId" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    DoctorName :<input type="text" id="DC_DoctorName" name="DC_DoctorName" maxlength="50" class="DoctorClaim" />
+                                </td>
+                            
+                                <td>
+                                    PatientPic(URL) :<input type="text" id="DC_PatientPic" name="DC_PatientPic" maxlength="50" class="DoctorClaim" />
+                                </td>
+                            </tr>
+                            <tr>
+                                
+                                <td>
+                                    Document(URL) :<input type="text" id="DC_Document" name="DC_Document" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    AppointmentDate :<input type="text" id="DC_AppointmentDate" name="DC_Document" maxlength="50" class="DoctorClaim" placeholder="dd-MMM-yyyy" />
+                                </td>
+                                <td>
+                                    Diagnosis:<input type="text" id="DC_Diagnosis" name="DC_Diagnosis" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    ClaimedAmount:<input type="text" id="DC_ClaimedAmount" name="DC_ClaimedAmount" maxlength="50" class="DoctorClaim" />
+                                </td>
+                            </tr>
+                        </table>
+                   
+                    </td>
+                    <td><input type="button" value="TryItNow" onclick="return SaveDoctorClaim();" /></td>
+                </tr>
+             
+            </tbody>
+        </table>
+        <div id="result">
+            <h1 style="text-align:center">Result</h1>
+            <textarea rows="10" cols="190" id="JsonResult">
+                [{"TDC_ClaimID":"201806260011"}]
+            </textarea>
+        </div>
+    </form>
+</body>
+</html>

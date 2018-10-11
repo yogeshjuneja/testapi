@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <meta charset="utf-8" />
+    <title>Pharmacy Manual</title>
+    <style>
+        .divBackMain {
+            z-index: 100;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            height: 100%;
+            width: 100%;
+            background-color: #A9A9A9;
+            opacity: 0.4;
+        }
+
+        #PolicyNumber, #FirstName, #MemberPolicyInfo, #MobileNumber, #MB_PolicyNum, #MB_MemberCode {
+            width: 100%;
+        }
+
+        #DC_PolicyNum, #DC_MemberCode {
+            width: 100%;
+        }
+
+        #Policy {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            #Policy td, #Policy th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            /*#Policy tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }*/
+
+            /*#Policy tr:hover {
+                background-color: #ddd;
+            }*/
+
+            #Policy th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #ddd;
+                color: white;
+            }
+
+
+        .loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid blue;
+            border-right: 16px solid green;
+            border-bottom: 16px solid red;
+            border-left: 16px solid pink;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+
+        var TokenName = "ashish.srivastava";
+        var BaseUrl = "http://localhost:57439/api/Pharmacy/";
+        function LoadPolicyDetail() {
+            $("#result").hide();
+            $("#JsonResult").val("");
+
+            var isValid = ValidationLoadPolicyDetail();
+            if (isValid == false) {
+                return false;
+            }
+            debugger;
+            var pharmacy = {
+                PolicyNumber: $('#PolicyNumber').val(),
+                FirstName: $('#FirstName').val()
+            };
+            
+            $("#container").show();
+            $.ajax({
+                url: BaseUrl + "PolicyInfo/",
+                data: JSON.stringify(pharmacy),
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                crossDomain: true,
+                cache: false,
+                dataType: "json",
+               
+                headers: {
+                    'Token': TokenName
+                },
+                success: function (data) {
+
+                    $("#result").show();
+                    $("#JsonResult").val(data);
+                    $("#container").hide();
+                },
+                error: function (errormessage) {
+                    $("#result").show();
+                    $("#JsonResult").val(errormessage.responseText);
+                    $("#container").hide();
+                }
+            });
+        }
+
+      
+     
+
+        function ValidationLoadPolicyDetail()
+        {
+           
+            var IsValid = true;
+            if ($("#PolicyNumber").val().trim() == '') {
+                $("#PolicyNumber").css("border-color", "Red");
+                IsValid = false;
+            }
+            else {
+                $("#PolicyNumber").css("border-color", "Grey");
+                IsValid = true;
+            }
+
+            if ($("#FirstName").val().trim() == '') {
+                $("#FirstName").css("border-color", "Red");
+               IsValid = false;
+            }
+            else {
+                $("#FirstName").css("border-color", "Grey");
+                IsValid = true;
+            }
+            return IsValid;
+        }
+    </script>
+</head>
+<body>
+    <form>
+        <div id="container" class="divBackMain" style="display:none">
+            <div class="loader">
+
+            </div>
+        </div>
+        <div class="text-center">
+            <h2 style="text-align:center">Pharmacy Health Manual</h2>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <table id="Policy">
+                        <thead style="background-color:#ddd;">
+                            <tr>
+                                <td>APIs Name</td>
+
+                                <td>Parameter</td>
+                                <td>Action</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>Policy Detail</b></td>
+                                <td>
+                                    PolicyNumber:<input type="text" id="PolicyNumber" name="PolicyNumber" maxlength="50" />
+                                    FirstName:<input type="text" id="FirstName" name="FirstName" maxlength="50" />
+                                </td>
+                              
+                                <td><input type="button" value="TryItNow" onclick="return LoadPolicyDetail();" /></td>
+                            </tr>
+                         
+                        </tbody>
+                    </table>
+                    <div style="display:none" id="result">
+                        <h1 style="text-align:center">Result</h1>
+                        <textarea rows="10" class="form-control" id="JsonResult"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

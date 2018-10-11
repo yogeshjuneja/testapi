@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="AngularJS/angular.js"></script>
+    <meta charset="utf-8" />
+    <title>DC Claim Help Mannual</title>
+    <style>
+        .divBackMain {
+            z-index: 100;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            height: 100%;
+            width: 100%;
+            background-color: #A9A9A9;
+            opacity: 0.4;
+        }
+
+        .DoctorClaim {
+            width: 100%;
+        }
+
+        #DC_PolicyNum, #DC_MemberCode {
+            width: 100%;
+        }
+
+        #Policy {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            #Policy td, #Policy th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            /*#Policy tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }*/
+
+            /*#Policy tr:hover {
+                background-color: #ddd;
+            }*/
+
+            #Policy th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #ddd;
+                color: white;
+            }
+
+
+        .loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid blue;
+            border-right: 16px solid green;
+            border-bottom: 16px solid red;
+            border-left: 16px solid pink;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+        var TokenName = "ashish.srivastava";
+        var BaseUrl = "http://localhost:57439/api/DCClaim/";
+
+        function SaveDcClaim() {
+            debugger;
+            var isValid = ValidateDoctorClaim();
+            if (isValid == false) {
+                return false;
+            }
+            $("#result").show();
+            $("#JsonResult").val('[{"TDC_ClaimID":"201806260011"}]');
+            $("#container").show();
+            debugger;
+            var objDC = {
+                TDCC_PolicyNumber: $("#TDCC_PolicyNumber").val(),
+                TDCC_PatientName: $("#TDCC_PatientName").val(),
+                TDCC_MemberCode: $("#TDCC_MemberCode").val(),
+                TDCC_PatientAge: $("#TDCC_PatientAge").val(),
+                TDCC_PatientGen: $("#TDCC_PatientGen").val(),
+                TDCC_PatientAddress: $("#TDCC_PatientAddress").val(),
+                TDCC_PatientMobile: $("#TDCC_PatientMobile").val(),
+                TDCC_AppointmentDate: $("#TDCC_AppointmentDate").val(),
+                TDCC_DCID: $("#TDCC_DCID").val(),
+                TDCC_DCName: $("#TDCC_DCName").val(),
+                TDCC_PatientPic: $("#TDCC_PatientPic").val(),
+                TDCC_Document: $("#TDCC_Document").val(),
+                DC_Diagnosis: $("#DC_Diagnosis").val(),
+                DC_ClaimedAmount: $("#DC_ClaimedAmount").val(),
+                TDCC_ClaimClient: $("#DC_ClientId").val()
+            };
+
+            $.ajax({
+                url: BaseUrl + "DCClaim",
+                data: JSON.stringify(objDC),
+                crossDomain: true,
+                cache: false,
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                headers: {
+                    'Token': TokenName
+                },
+                success: function (data) {
+
+                    $("#result").show();
+                    $("#JsonResult").val(data);
+                    $("#container").hide();
+                },
+                error: function (errormessage) {
+                    $("#result").show();
+                    $("#JsonResult").val(errormessage.responseText);
+                    $("#container").hide();
+
+                }
+            });
+        }
+
+        function ValidateDoctorClaim() {
+            var isValid = true;
+            if ($('#TDCC_PolicyNumber').val().trim() == "") {
+                $('#TDCC_PolicyNumber').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#TDCC_PolicyNumber').css('border-color', 'lightgrey');
+            }
+            //if ($('#DC_ClientId').val().trim()=="") {
+            //    $('#DC_ClientId').css('border-color', 'Red');
+            //    isValid = false;
+            //}
+            //else {
+            //    $('#DC_ClientId').css('border-color', 'lightgrey');
+            //}
+            return isValid;
+        }
+
+
+
+
+
+    </script>
+</head>
+<body>
+    <!--<div ng-app="">
+        <p>Name: <input type="text" ng-model="name"></p>
+        <p ng-bind="name"></p>
+    </div>-->
+    <form>
+
+        <div id="container" class="divBackMain" style="display:none">
+            <div class="loader">
+
+            </div>
+        </div>
+        <h2 style="text-align:center">DC Claim Help Mannual</h2>
+        <table id="Policy" class=".table-striped">
+            <thead style="background-color:#ddd;">
+                <tr>
+                    <td>APIs Name</td>
+
+                    <td>Parameter</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Doctor Claim</b></td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>
+                                    ClientId:<input type="text" id="DC_ClientId" name="DC_ClientId" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PolicyNumber :<input type="text" id="TDCC_PolicyNumber" name="TDCC_PolicyNumber" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PatientName :<input type="text" id="TDCC_PatientName" name="TDCC_PatientName" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    MemberCode :<input type="text" id="TDCC_MemberCode" name="TDCC_MemberCode" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PatientAge :<input type="text" id="TDCC_PatientAge" name="TDCC_PatientAge " maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PatientGender :<input type="text" id="TDCC_PatientGen" name="TDCC_PatientGen" maxlength="50" class="DoctorClaim" />
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    PatientAddress :<input type="text" id="TDCC_PatientAddress" name="TDCC_PatientAddress" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PatientMobile :<input type="text" id="TDCC_PatientMobile" name="TDCC_PatientMobile" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <!--<td>
+                                    DoctorId :<input type="text" id="TDCC_DCID" name="TDCC_DCID" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    DoctorName :<input type="text" id="TDCC_DCName" name="TDCC_DCName" maxlength="50" class="DoctorClaim" />
+                                </td>-->
+                                <td>
+                                    DCId :<input type="text" id="TDCC_DCID" name="TDCC_DCID" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    DCName :<input type="text" id="TDCC_DCName" name="TDCC_DCName" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    PatientPic(URL) :<input type="text" id="TDCC_PatientPic" name="TDCC_PatientPic" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    Document(URL) :<input type="text" id="TDCC_Document" name="TDCC_Document" maxlength="50" class="DoctorClaim" />
+                                </td>
+                            </tr>
+                            <tr>
+                                
+                                
+                                <td>
+                                    AppointmentDate :<input type="text" id="TDCC_AppointmentDate" name="TDCC_AppointmentDate" placeholder="mm/DD/yyyy" maxlength="50" class="DoctorClaim" />
+                                </td>
+
+                                <td>
+                                    Diagnosis:<input type="text" id="DC_Diagnosis" name="DC_Diagnosis" maxlength="50" class="DoctorClaim" />
+                                </td>
+                                <td>
+                                    ClaimedAmount:<input type="text" id="DC_ClaimedAmount" name="DC_ClaimedAmount" maxlength="50" class="DoctorClaim" />
+                                </td>
+                            </tr>
+                           
+                        </table>
+
+                    </td>
+                    <td><input type="button" value="TryItNow" onclick="return SaveDcClaim();" /></td>
+                </tr>
+
+            </tbody>
+        </table>
+        <div id="result">
+            <h1 style="text-align:center">Result</h1>
+            <textarea rows="10" cols="190" id="JsonResult">
+               
+            </textarea>
+        </div>
+    </form>
+</body>
+</html>

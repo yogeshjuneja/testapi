@@ -1,0 +1,445 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <meta charset="utf-8" />
+    <title>DCManual</title>
+    <style>
+        .divBackMain {
+            z-index: 100;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            height: 100%;
+            width: 100%;
+            background-color: #A9A9A9;
+            opacity: 0.4;
+        }
+
+        #PolicyInfo, #MemberCode, #MemberPolicyInfo, #MobileNumber, #MB_PolicyNum, #MB_MemberCode {
+            width: 100%;
+        }
+
+        #DC_PolicyNum, #DC_MemberCode {
+            width: 100%;
+        }
+
+        #Policy {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            #Policy td, #Policy th {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            /*#Policy tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }*/
+
+            /*#Policy tr:hover {
+                background-color: #ddd;
+            }*/
+
+            #Policy th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #ddd;
+                color: white;
+            }
+
+
+        .loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid blue;
+            border-right: 16px solid green;
+            border-bottom: 16px solid red;
+            border-left: 16px solid pink;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+        var TokenName = "ashish.srivastava";
+        var BaseUrl = "http://192.168.2.96/copd_api/api/PolicyInfo/";
+        function LoadPolicyDetail() {
+            var isValid = ValidationLoadPolicyDetail();
+            if (isValid == false) {
+                return false;
+            }
+            var PolicyNumber = $("#PolicyInfo").val();
+            $("#result").hide();
+            $("#JsonResult").val("");
+            $("#container").show();
+            $.ajax({
+                type: 'post',
+                url: BaseUrl + PolicyNumber,
+                crossDomain: true,
+                cache: false,
+                dataType: "json",
+                headers: {
+                    'Token': TokenName
+                },
+                success: function (data) {
+
+                    $("#result").show();
+                    $("#JsonResult").val(data);
+                    $("#container").hide();
+                },
+                error: function (errormessage) {
+
+                    $("#result").show();
+                    $("#JsonResult").val(errormessage.responseText);
+                    $("#container").hide();
+                }
+            });
+        }
+
+        function LoadPolicyMemberDetail() {
+            var IsValid = ValidateMemberPolicyDetail();
+            if (IsValid == false)
+                return false;
+            $("#result").hide();
+            $("#JsonResult").val("");
+            $("#container").show();
+
+            var PolicyNumber = $("#MemberPolicyInfo").val();
+            $.ajax({
+                url: BaseUrl + "Member/" + PolicyNumber,
+                type: "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                headers: {
+                    'Token': TokenName
+                },
+                success: function (result) {
+                    $("#result").show();
+                    $("#JsonResult").val(result);
+                    $("#container").hide();
+                },
+                error: function (errormessage) {
+                    $("#result").show();
+                    $("#JsonResult").val(errormessage.responseText);
+                    $("#container").hide();
+                }
+            });
+        }
+
+        function ValidationLoadPolicyDetail() {
+            $("#result").hide();
+            $("#JsonResult").val("");
+            var isValid = true;
+            if ($('#PolicyInfo').val().trim() == "") {
+                $('#PolicyInfo').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#PolicyInfo').css('border-color', 'lightgrey');
+            }
+            return isValid
+        }
+
+        function ValidateMemberPolicyDetail() {
+            $("#result").hide();
+            $("#JsonResult").val("");
+            var isValid = true;
+            if ($('#MemberPolicyInfo').val().trim() == "") {
+                $('#MemberPolicyInfo').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#MemberPolicyInfo').css('border-color', 'lightgrey');
+            }
+            return isValid;
+        }
+
+        function ValidateMobileNumberIsValid() {
+            $("#result").hide();
+            $("#JsonResult").val("");
+            var isValid = true;
+            if ($('#MobileNumber').val().trim() == "") {
+                $('#MobileNumber').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#MobileNumber').css('border-color', 'lightgrey');
+            }
+            return isValid;
+        }
+
+        function ValidateMobile() {
+            $("#result").hide();
+            $("#JsonResult").val("");
+            var isValid = ValidateMobileNumberIsValid();
+            if (isValid == false) {
+                return false;
+            }
+            $("#result").hide();
+            $("#JsonResult").val("");
+            $("#container").show();
+            var Mobile = $("#MobileNumber").val();
+            $.ajax({
+                type: 'post',
+                url: BaseUrl + 'Mobile/' + Mobile,
+                crossDomain: true,
+                cache: false,
+                dataType: "json",
+                headers: { 'Token': TokenName },
+                success: function (data) {
+                    debugger;
+                    $("#result").show();
+                    $("#JsonResult").val(data);
+                    $("#container").hide();
+                },
+                error: function (errormessage) {
+                    $("#result").show();
+                    $("#JsonResult").val(errormessage.responseText);
+                    $("#container").hide();
+                }
+            });
+        }
+
+        function ValidateMemberBenifit() {
+            var isValid = true;
+            if ($('#MB_PolicyNum').val().trim() == "") {
+                $('#MB_PolicyNum').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#MB_PolicyNum').css('border-color', 'lightgrey');
+            }
+            var isValid = true;
+            if ($('#MB_MemberCode').val().trim() == "") {
+                $('#MB_MemberCode').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#MB_MemberCode').css('border-color', 'lightgrey');
+            }
+            return isValid;
+        }
+
+        function LoadMemberBenifit() {
+            $("#result").hide();
+            $("#JsonResult").val("");
+            var isValid = ValidateMemberBenifit();
+            if (isValid == false) {
+                return false;
+            }
+            $("#container").show();
+            $.ajax({
+                type: 'post',
+                url: BaseUrl + "MemberBenefit/" + $("#MB_PolicyNum").val() + "/" + $("#MB_MemberCode").val(),
+                crossDomain: true,
+                cache: false,
+                dataType: "json",
+                headers: {
+                    'Token': TokenName
+                },
+                success: function (data) {
+                    $("#result").show();
+                    $("#JsonResult").val(data);
+                    $("#container").hide();
+                },
+                error: function (errormessage) {
+                    $("#result").show();
+                    $("#JsonResult").val(errormessage.responseText);
+                    $("#container").hide();
+                }
+            });
+        }
+
+        function DCCoveredinfo() {
+            $("#result").hide();
+            $("#JsonResult").val("");
+
+            var isvalid = validateDcCoverInfo();
+            if (isvalid == false)
+                return false
+            $("#container").show();
+            $.ajax({
+                type: 'post',
+                url: BaseUrl + "DCCoveredinfo/" + $("#DC_PolicyNum").val() + "/" + $("#DC_MemberCode").val(),
+                crossDomain: true,
+                cache: false,
+                dataType: "json",
+                headers: {
+                    'Token': "ashish.srivastava"
+                },
+                success: function (data) {
+
+                    $("#result").show();
+                    $("#JsonResult").val(data);
+                    $("#container").hide();
+                },
+                error: function (errormessage) {
+                    $("#result").show();
+                    $("#JsonResult").val(errormessage.responseText);
+                    $("#container").hide();
+                }
+            });
+        }
+
+        function validateDcCoverInfo() {
+            var isValid = true;
+            if ($('#DC_PolicyNum').val().trim() == "") {
+                $('#DC_PolicyNum').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#DC_PolicyNum').css('border-color', 'lightgrey');
+            }
+            var isValid = true;
+            if ($('#DC_MemberCode').val().trim() == "") {
+                $('#DC_MemberCode').css('border-color', 'Red');
+                isValid = false;
+            }
+            else {
+                $('#DC_MemberCode').css('border-color', 'lightgrey');
+            }
+            return isValid;
+        }
+
+        function DCPolicyDetails() {
+            $("#result").hide();
+            $("#JsonResult").val("");
+
+            var isvalid = validateDcCoverInfo();
+            if (isvalid == false)
+                return false
+            $("#container").show();
+            $.ajax({
+                type: 'post',
+                url: BaseUrl + "DCPolicyDetails/" + $("#DCPolicy_PolicyNum").val() + "/" + $("#DCPolicy_First").val(),
+                crossDomain: true,
+                cache: false,
+                dataType: "json",
+                headers: {
+                    'Token': "ashish.srivastava"
+                },
+                success: function (data) {
+
+                    $("#result").show();
+                    $("#JsonResult").val(data);
+                    $("#container").hide();
+                },
+                error: function (errormessage) {
+                    $("#result").show();
+                    $("#JsonResult").val(errormessage.responseText);
+                    $("#container").hide();
+                }
+            });
+        }
+    </script>
+</head>
+<body>   
+    <form>
+        <div id="container" class="divBackMain" style="display:none">
+            <div class="loader">
+
+            </div>
+        </div>
+        <div class="text-center">
+            <h2 style="text-align:center">DC Health Manual</h2>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <table id="Policy">
+                        <thead style="background-color:#ddd;">
+                            <tr>
+                                <td>APIs Name</td>
+
+                                <td>Parameter</td>
+                                <td>Action</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>PolicyInfo</b></td>
+                                <td>PolicyNumber:<input type="text" id="PolicyInfo" name="PolicyInfo" maxlength="50" /></td>
+                                <td><input type="button" value="TryItNow" onclick="return LoadPolicyDetail();" /></td>
+                            </tr>
+                            <tr>
+                                <td><b>Policy Member Details</b></td>
+                                <td>
+                                    PolicyNumber:<input type="text" id="MemberPolicyInfo" name="MemberPolicyInfo" maxlength="50" />
+
+                                </td>
+                                <td><input type="button" value="TryItNow" onclick="return LoadPolicyMemberDetail();" /></td>
+                            </tr>
+                            <tr>
+                                <td><b>Validate Mobile Number</b></td>
+                                <td>
+                                    MobileNumber:<input type="text" id="MobileNumber" name="MobileNumber" maxlength="15" />
+                                </td>
+                                <td><input type="button" value="TryItNow" onclick="return ValidateMobile();" /></td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td><b>DCCoveredinfo</b></td>
+                                <td>
+                                    PolicyNumber:<input type="text" id="DC_PolicyNum" name="DC_PolicyNum" maxlength="50" />
+                                    MemberCode:<input type="text" id="DC_MemberCode" name="DC_MemberCode" maxlength="50" />
+                                </td>
+
+                                <td><input type="button" value="TryItNow" onclick="return DCCoveredinfo();" /></td>
+                            </tr>
+                            <tr>
+                                <td><b>DC Policy Details</b></td>
+                                <td>
+                                    PolicyNumber:<input type="text" id="DCPolicy_PolicyNum" name="DCPolicy_PolicyNum" maxlength="50" />
+                                    Firt Name:<input type="text" id="DCPolicy_First" name="DCPolicy_First" maxlength="50" />
+                                </td>
+
+                                <td><input type="button" value="TryItNow" onclick="return DCPolicyDetails();" /></td>
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+                    <div style="display:none" id="result">
+                        <h1 style="text-align:center">Result</h1>
+                        <textarea rows="10" class="form-control" id="JsonResult"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
